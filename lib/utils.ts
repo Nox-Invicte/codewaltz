@@ -39,8 +39,6 @@ export async function hasEnvVars() {
   )
 }
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+
 
 
