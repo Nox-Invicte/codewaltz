@@ -1,5 +1,5 @@
 "use client";
-
+import { useState, useEffect} from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -31,6 +31,7 @@ const sampleSnippets = [
 ];
 
 export default function Home() {
+ 
   return (
     <main className="p-8 max-w-5xl mx-auto">
       <h1 className="text-6xl font-bold mb-8">Welcome to CodeWaltz</h1>
