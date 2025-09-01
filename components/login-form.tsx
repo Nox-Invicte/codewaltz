@@ -14,14 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -31,6 +31,9 @@ export function LoginForm({
     const supabase = createClient();
     setIsLoading(true);
     setError(null);
+
+    const email = emailRef.current?.value || "";
+    const password = passwordRef.current?.value || "";
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -48,7 +51,7 @@ export function LoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
@@ -66,8 +69,7 @@ export function LoginForm({
                   type="email"
                   placeholder="m@example.com"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  ref={emailRef}
                 />
               </div>
               <div className="grid gap-2">
@@ -84,8 +86,7 @@ export function LoginForm({
                   id="password"
                   type="password"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  ref={passwordRef}
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
