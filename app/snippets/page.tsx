@@ -61,7 +61,7 @@ export default function SnippetsPage() {
   };
 
   // State for confirmation dialog
-  type ConfirmActionType = "save" | "delete" | null;
+  type ConfirmActionType = "Save" | "Delete" | null;
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     actionType: ConfirmActionType;
@@ -72,7 +72,7 @@ export default function SnippetsPage() {
     targetId: null,
   });
 
-  const openConfirmDialog = (actionType: "save" | "delete", targetId: string | null = null) => {
+  const openConfirmDialog = (actionType: "Save" | "Delete", targetId: string | null = null) => {
     setConfirmDialog({ isOpen: true, actionType, targetId });
   };
 
@@ -114,7 +114,7 @@ export default function SnippetsPage() {
       setSnippets((prev) => prev.filter((snippet) => snippet.id !== id));
       closeConfirmDialog();
     } catch (err) {
-      alert("Failed to delete snippet");
+      alert("Failed to Delete snippet");
     }
   };
 
@@ -129,7 +129,7 @@ export default function SnippetsPage() {
       return;
     }
     if (editingId !== null) {
-      openConfirmDialog("save");
+      openConfirmDialog("Save");
     } else {
       try {
         const newSnippet = await addSnippet({
@@ -160,7 +160,7 @@ export default function SnippetsPage() {
   };
 
   const handleDelete = (id: string) => {
-    openConfirmDialog("delete", id);
+    openConfirmDialog("Delete", id);
   };
 
   const handleCancelEdit = () => {
@@ -346,14 +346,14 @@ export default function SnippetsPage() {
         <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-0 z-50">
           <div className="bg-gray-900 p-6 border-4 border-gray-400 rounded-lg shadow-lg max-w-sm w-full">
             <h2 className="text-xl font-bold mb-4 text-white">
-              {confirmDialog.actionType === "save"
+              {confirmDialog.actionType === "Save"
                 ? "Confirm Save"
                 : "Confirm Delete"}
             </h2>
             <p className="mb-6 text-white">
-              {confirmDialog.actionType === "save"
-                ? "Are you sure you want to save the changes?"
-                : "Are you sure you want to delete this snippet?"}
+              {confirmDialog.actionType === "Save"
+                ? "Are you sure you want to Save the changes?"
+                : "Are you sure you want to Delete this snippet?"}
             </p>
             <div className="flex justify-end space-x-4">
               <button
@@ -364,7 +364,7 @@ export default function SnippetsPage() {
               </button>
               <button
                 onClick={
-                  confirmDialog.actionType === "save"
+                  confirmDialog.actionType === "Save"
                     ? confirmSave
                     : confirmDelete
                 }
