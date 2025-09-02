@@ -14,12 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { ThemeContext } from "@/app/LayoutClient";
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const { theme } = useContext(ThemeContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -44,7 +46,7 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/profile`,
         },
       });
       if (error) throw error;
@@ -58,7 +60,11 @@ export function SignUpForm({
 
   return (
     <div className="flex flex-col gap-6">
-      <Card>
+      <Card
+        className={`border ${
+          theme === "dark" ? "border-white" : "border-black"
+        }`}
+      >
         <CardHeader>
           <CardTitle className="text-2xl">Sign up</CardTitle>
           <CardDescription>Create a new account</CardDescription>
@@ -75,6 +81,9 @@ export function SignUpForm({
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className={`border ${
+                    theme === "dark" ? "border-white" : "border-black"
+                  }`}
                 />
               </div>
               <div className="grid gap-2">
@@ -87,6 +96,9 @@ export function SignUpForm({
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className={`border ${
+                    theme === "dark" ? "border-white" : "border-black"
+                  }`}
                 />
               </div>
               <div className="grid gap-2">
@@ -99,22 +111,36 @@ export function SignUpForm({
                   required
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
+                  className={`border ${
+                    theme === "dark" ? "border-white" : "border-black"
+                  }`}
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
-              </Button>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
-              <Link href="/auth/login" className="underline underline-offset-4">
-                Login
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+          <Button
+            type="submit"
+            className={`w-full border ${
+              theme === "dark" ? "border-white" : "border-black"
+            }`}
+            disabled={isLoading}
+          >
+            {isLoading ? "Creating an account..." : "Sign up"}
+          </Button>
+        </div>
+        <div className="mt-4 text-center text-sm">
+          Already have an account?{" "}
+          <Link
+            href="/auth/login"
+            className={`underline underline-offset-4 border-b ${
+              theme === "dark" ? "border-white" : "border-black"
+            }`}
+          >
+            Login
+          </Link>
+        </div>
+      </form>
+    </CardContent>
+  </Card>
+</div>
   );
 }

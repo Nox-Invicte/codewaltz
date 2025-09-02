@@ -102,16 +102,16 @@ export default function LayoutClient({
       >
         <div className="overflow-hidden max-w-[300px] relative">
           <aside
-            className={`relative z-10 w-60 h-full ${themeBackgrounds[theme]} border-black border-5 overflow-auto shadow-lg`}
+            className={`relative z-10 w-70 h-full ${themeBackgrounds[theme]} border-black border-5 overflow-auto shadow-lg`}
           >
-            <h1 className="text-4xl font-bold text-center text-white bg-black py-7">
+            <h1 className="text-4xl font-bold text-center text-white bg-[rgb(12,12,12)] py-7">
               <a href="/" className="relative inline-block text-white group">
                 <span className="block transition-opacity duration-300 group-hover:opacity-0">
                   CodeWaltz
                 </span>
                 <img
-                  src="/favicon.jpeg"
-                  alt="favicon"
+                  src="/codewaltz.jpeg"
+                  alt="codewaltz"
                   className="absolute top-1/2 left-1/2 w-32 h-18 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 />
               </a>

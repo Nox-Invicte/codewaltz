@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { fetchSnippets, addSnippet, updateSnippet, deleteSnippet, type Snippet } from "@/lib/supabase/snippets";
+import { fetchSnippets, fetchUserSnippets, addSnippet, updateSnippet, deleteSnippet, type Snippet } from "@/lib/supabase/snippets";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -12,26 +13,35 @@ export default function SnippetsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [displayName, setDisplayName] = useState<string>("");
 
   useEffect(() => {
     const loadSnippets = async () => {
       try {
-        const data = await fetchSnippets();
+        if (!currentUser) {
+          setSnippets([]);
+          setLoading(false);
+          return;
+        }
+        const data = await fetchUserSnippets(currentUser.id);
+        console.log("User snippets fetched in page:", data);
         setSnippets(data);
       } catch (err) {
+        console.error("Error loading user snippets in page:", err);
         setError(err instanceof Error ? err.message : "Failed to load snippets");
       } finally {
         setLoading(false);
       }
     };
     loadSnippets();
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
     const loadUser = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user);
+      setDisplayName(user?.user_metadata?.username ?? "");
     };
     loadUser();
   }, []);
@@ -110,8 +120,12 @@ export default function SnippetsPage() {
 
   const handleAddSnippet = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title || !form.code || !form.author) {
+    if (!form.title || !form.code) {
       alert("Please fill in all required fields.");
+      return;
+    }
+    if (!displayName) {
+      alert("Please set your display name first in settings.");
       return;
     }
     if (editingId !== null) {
@@ -122,7 +136,7 @@ export default function SnippetsPage() {
           title: form.title,
           language: form.language,
           code: form.code,
-          author: form.author,
+          author: displayName,
         });
         setSnippets((prev) => [newSnippet, ...prev]);
         setForm({ title: "", language: "javascript", code: "", author: "" });
@@ -176,6 +190,15 @@ export default function SnippetsPage() {
     <>
       <main className="p-8 max-w-5xl mx-auto">
         <h1 className="text-5xl font-bold mb-8">Your Snippets</h1>
+
+        {!displayName && (
+          <div className="mb-8 p-4 bg-yellow-600 text-white rounded-lg">
+            <p className="mb-2">You need to set your display name before creating snippets.</p>
+            <Link href="/settings" className="underline">
+              Go to Settings
+            </Link>
+          </div>
+        )}
 
         <form
           onSubmit={handleAddSnippet}
@@ -235,20 +258,25 @@ export default function SnippetsPage() {
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-white mb-2" htmlFor="author">
-              Author <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="author"
-              name="author"
-              type="text"
-              value={form.author}
-              onChange={handleInputChange}
-              className="w-full p-2 rounded bg-gray-700 text-white"
-              required
-            />
-          </div>
+          {editingId && (
+            <div className="mb-4">
+              <label className="block text-white mb-2" htmlFor="author">
+                Author <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="author"
+                name="author"
+                type="text"
+                value={form.author}
+                onChange={handleInputChange}
+                className="w-full p-2 rounded bg-gray-700 text-white"
+                required
+              />
+            </div>
+          )}
+          {!editingId && displayName && (
+            <p className="text-sm text-gray-400 mb-4">Author will be set to: {displayName}</p>
+          )}
 
           <button
             type="submit"
@@ -270,7 +298,13 @@ export default function SnippetsPage() {
 
         <section className="space-y-12">
           {snippets.map(({ id, title, language, code, author, user_id, created_at, updated_at }) => (
-            <article key={id} className="bg-gray-800 rounded-lg p-6 shadow-lg">
+            <article key={id} className="bg-gray-800 rounded-lg p-6 shadow-lg relative group">
+              <button
+                onClick={() => navigator.clipboard.writeText(code).then(() => alert('Code copied to clipboard!'))}
+                className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              >
+                Copy
+              </button>
               <h2 className="text-2xl font-semibold mb-4 text-white">{title}</h2>
               <SyntaxHighlighter
                 language={language}

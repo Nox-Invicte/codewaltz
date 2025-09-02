@@ -38,17 +38,19 @@ export function UserInfo() {
 
   return user ? (
     <div className="flex flex-col items-center gap-2 py-4">
-      <p className="text-sm text-center">
-        Logged in as: {user.user_metadata?.username ?? user.email}
-      </p>
+      <Button className="text-sm text-center">
+        <Link href={`/profile/${user.id}`}>
+          {user.user_metadata?.username ?? user.email?.split('@')[0]}
+        </Link>
+      </Button>
       <LogoutButton />
     </div>
   ) : (
     <div className="flex flex-col gap-2 py-4">
-      <Button asChild size="sm" variant={"outline"} className="w-full">
+      <Button asChild size="sm" variant={"default"} className="w-40 mx-auto">
         <Link href="/auth/login">Sign in</Link>
       </Button>
-      <Button asChild size="sm" variant={"default"} className="w-full">
+      <Button asChild size="sm" variant={"default"} className="w-40 mx-auto">
         <Link href="/auth/sign-up">Sign up</Link>
       </Button>
     </div>

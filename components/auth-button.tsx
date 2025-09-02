@@ -4,12 +4,14 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { LogoutButton } from "./logout-button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import type { User } from "@supabase/supabase-js";
+import { ThemeContext } from "@/app/LayoutClient";
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -32,10 +34,24 @@ export function AuthButton() {
     </div>
   ) : (
     <div className="flex gap-2">
-      <Button asChild size="sm" variant={"outline"}>
+      <Button
+        asChild
+        size="sm"
+        className={`bg-transparent border ${
+          theme === "dark" ? "border-white" : "border-black"
+        }`}
+        variant={"outline"}
+      >
         <Link href="/auth/login">Sign in</Link>
       </Button>
-      <Button asChild size="sm" variant={"default"}>
+      <Button
+        asChild
+        size="sm"
+        className={`bg-transparent border ${
+          theme === "dark" ? "border-white" : "border-black"
+        }`}
+        variant={"default"}
+      >
         <Link href="/auth/sign-up">Sign up</Link>
       </Button>
     </div>

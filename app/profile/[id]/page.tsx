@@ -1,16 +1,22 @@
 import { redirect } from "next/navigation";
-
 import { createClient } from "@/lib/supabase/server";
 import { InfoIcon, User, Mail, Calendar } from "lucide-react";
-import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
 
-export default async function ProtectedPage() {
+interface ProfilePageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function ProfilePage({ params }: ProfilePageProps) {
+  const { id } = await params;
   const supabase = await createClient();
 
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user) {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
     redirect("/auth/login");
   }
+
+  // For now, only allow viewing own profile
+
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">

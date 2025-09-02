@@ -1,23 +1,77 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { deleteAllSnippets } from "@/lib/supabase/snippets";
+import type { User } from "@supabase/supabase-js";
 
 export default function Settings() {
   const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [displayName, setDisplayName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [updateStatus, setUpdateStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        router.push("/auth/login");
+        return;
+      }
+      setUser(data.user);
+      setDisplayName(data.user.user_metadata?.username ?? "");
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, [router]);
 
   const handleDeleteAllClick = () => {
     setConfirmDeleteAll(true);
   };
 
-  const handleConfirmDeleteAll = () => {
-    localStorage.removeItem("userSnippets");
-    setConfirmDeleteAll(false);
-    alert("All snippets have been deleted.");
+  const handleConfirmDeleteAll = async () => {
+    try {
+      await deleteAllSnippets();
+      setConfirmDeleteAll(false);
+      alert("All snippets have been deleted.");
+    } catch (error) {
+      alert("Failed to delete snippets. Please try again.");
+      console.error("Error deleting all snippets:", error);
+    }
   };
 
   const handleCancelDeleteAll = () => {
     setConfirmDeleteAll(false);
   };
+
+  const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDisplayName(e.target.value);
+  };
+
+  const handleUpdateDisplayName = async () => {
+    setUpdateStatus(null);
+    const supabase = createClient();
+    const { error } = await supabase.auth.updateUser({
+      data: { username: displayName },
+    });
+    if (error) {
+      setUpdateStatus({ success: false, message: error.message });
+    } else {
+      setUpdateStatus({ success: true, message: "Display name updated successfully." });
+      // Redirect to profile after successful update
+      router.push(`/profile/${user?.id}`);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center py-4">Loading...</div>;
+  }
 
   return (
     <main className={`p-8 max-w-5xl mx-auto min-h-screen`}>
@@ -26,6 +80,32 @@ export default function Settings() {
         Customize your CodeWaltz experience.
       </p>
       <section className="space-y-12">
+        <div className="rounded-lg p-6 shadow-lg bg-gray-800 bg-opacity-50">
+          <h2 className="text-2xl text-white font-semibold mb-4">Display Name</h2>
+          <input
+            type="text"
+            value={displayName}
+            onChange={handleDisplayNameChange}
+            className="w-full p-2 rounded mb-4 text-white"
+            placeholder="Enter your display name"
+          />
+          <button
+            onClick={handleUpdateDisplayName}
+            className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded"
+          >
+            Update Display Name
+          </button>
+          {updateStatus && (
+            <p
+              className={`mt-4 ${
+                updateStatus.success ? "text-green-400" : "text-red-400"
+              }`}
+            >
+              {updateStatus.message}
+            </p>
+          )}
+        </div>
+
         <div className="rounded-lg p-6 shadow-lg bg-gray-800 bg-opacity-50">
           <h2 className="text-2xl text-white font-semibold mb-4">Snippets</h2>
           <button

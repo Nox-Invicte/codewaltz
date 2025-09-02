@@ -14,12 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useContext } from "react";
+import { ThemeContext } from "@/app/LayoutClient";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const { theme } = useContext(ThemeContext);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,13 +38,13 @@ export function LoginForm({
     const password = passwordRef.current?.value || "";
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       if (error) throw error;
       // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
+      router.push(`/profile/${data.user?.id}`);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -52,7 +54,11 @@ export function LoginForm({
 
   return (
     <div className="flex flex-col gap-6">
-      <Card>
+      <Card
+        className={`border ${
+          theme === "dark" ? "border-white" : "border-black"
+        }`}
+      >
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
@@ -70,6 +76,9 @@ export function LoginForm({
                   placeholder="m@example.com"
                   required
                   ref={emailRef}
+                  className={`border ${
+                    theme === "dark" ? "border-white" : "border-black"
+                  }`}
                 />
               </div>
               <div className="grid gap-2">
@@ -77,7 +86,9 @@ export function LoginForm({
                   <Label htmlFor="password">Password</Label>
                   <Link
                     href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className={`ml-auto inline-block text-sm underline-offset-4 hover:underline border-b ${
+                      theme === "dark" ? "border-white" : "border-black"
+                    }`}
                   >
                     Forgot your password?
                   </Link>
@@ -87,10 +98,19 @@ export function LoginForm({
                   type="password"
                   required
                   ref={passwordRef}
+                  className={`border ${
+                    theme === "dark" ? "border-white" : "border-black"
+                  }`}
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className={`w-full border ${
+                  theme === "dark" ? "border-white" : "border-black"
+                }`}
+                disabled={isLoading}
+              >
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </div>
@@ -98,7 +118,9 @@ export function LoginForm({
               Don&apos;t have an account?{" "}
               <Link
                 href="/auth/sign-up"
-                className="underline underline-offset-4"
+                className={`underline underline-offset-4 border-b ${
+                  theme === "dark" ? "border-white" : "border-black"
+                }`}
               >
                 Sign up
               </Link>
