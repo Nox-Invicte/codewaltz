@@ -25,7 +25,7 @@ export async function fetchSnippets(): Promise<Snippet[]> {
     console.error("Error fetching snippets:", error);
     throw new Error(error.message || "Unknown error");
   }
-  console.log("Fetched snippets data:", data);
+  
   return data || [];
 }
 
@@ -42,7 +42,7 @@ export async function fetchUserSnippets(userId: string): Promise<Snippet[]> {
     console.error("Error fetching user snippets:", error);
     throw new Error(error.message || "Unknown error");
   }
-  console.log("Fetched user snippets data:", data);
+  
   return data || [];
 }
 

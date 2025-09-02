@@ -24,7 +24,7 @@ export default function SnippetsPage() {
           return;
         }
         const data = await fetchUserSnippets(currentUser.id);
-        console.log("User snippets fetched in page:", data);
+        
         setSnippets(data);
       } catch (err) {
         console.error("Error loading user snippets in page:", err);
