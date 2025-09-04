@@ -11,13 +11,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Cyberpunk Dark Mode Palette
+        // Cyberpunk Dark Mode Palette - Updated
         cyber: {
           'black': '#0A0A0A',          // Deep Black (base canvas)
           'surface': '#121212',         // Cards/Sections
           'red': '#FF003C',            // Neon Red (primary accent)
           'purple': '#9D4EDD',         // Futuristic purple glow
-          'cyan': '#00FFF7',           // Electric Cyan (highlights)
+          'white': '#FFFFFF',          // Pure white (instead of cyan)
           'text': '#EAEAEA',           // Primary text
           'text-muted': '#B3B3B3',     // Secondary text
           'orange': '#FF5F1F',         // Error/Warning
@@ -28,7 +28,7 @@ export default {
           'surface': '#F0F0F3',        // Subtle light gray
           'red': '#E60026',            // Crimson Red
           'purple': '#7A3EEB',         // Tech Purple
-          'cyan': '#00B8C9',           // Cyber Cyan
+          'white': '#FFFFFF',          // Pure white
           'text': '#1A1A1A',           // Near-black
           'text-muted': '#555555',     // Medium gray
           'orange': '#FF3B30',         // Clear red warning
@@ -90,6 +90,8 @@ export default {
         'slide-down': 'slideDown 0.4s ease-out',
         'glow': 'glow 2s ease-in-out infinite alternate',
         'pulse-glow': 'pulseGlow 1.5s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'gradient-shift': 'gradientShift 8s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -112,9 +114,21 @@ export default {
           '0%, 100%': { boxShadow: '0 0 5px currentColor' },
           '50%': { boxShadow: '0 0 15px currentColor, 0 0 25px currentColor' },
         },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        gradientShift: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
       },
       backdropBlur: {
         xs: '2px',
+      },
+      backgroundSize: {
+        '300%': '300%',
+        '400%': '400%',
       },
     },
   },
