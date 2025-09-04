@@ -297,7 +297,7 @@ def process_data(df):
           />
           <motion.div
             className={`absolute right-4 top-1/2 transform -translate-y-1/2 ${
-              theme === 'dark' ? 'text-cyber-cyan' : 'text-light-cyan'
+              theme === 'dark' ? 'text-cyber-white' : 'text-light-white'
             }`}
             animate={{ rotate: searchTerm ? 180 : 0 }}
           >
