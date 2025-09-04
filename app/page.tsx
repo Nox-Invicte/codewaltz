@@ -257,8 +257,8 @@ def process_data(df):
       >
         <h1 className={`text-6xl lg:text-8xl font-bold mb-6 bg-gradient-to-r ${
           theme === 'dark' 
-            ? 'from-cyber-red via-cyber-purple to-cyber-cyan' 
-            : 'from-light-red via-light-purple to-light-cyan'
+            ? 'from-cyber-red via-cyber-purple to-cyber-white' 
+            : 'from-light-red via-light-purple to-light-white'
         } bg-clip-text text-transparent`}>
           CodeWaltz
         </h1>
