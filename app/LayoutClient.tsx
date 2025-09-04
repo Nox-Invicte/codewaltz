@@ -40,12 +40,10 @@ export default function LayoutClient({
 
     // Disable React DevTools in production
     if (process.env.NODE_ENV === "production") {
-      if (typeof window.__REACT_DEVTOOLS_GLOBAL_HOOK__ === "object") {
-        for (const [key, value] of Object.entries(
-          window.__REACT_DEVTOOLS_GLOBAL_HOOK__
-        )) {
-          window.__REACT_DEVTOOLS_GLOBAL_HOOK__[key] =
-            typeof value === "function" ? () => {} : null;
+      const devTools = (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__;
+      if (typeof devTools === "object") {
+        for (const [key, value] of Object.entries(devTools)) {
+          devTools[key] = typeof value === "function" ? () => {} : null;
         }
       }
 
