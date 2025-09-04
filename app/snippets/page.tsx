@@ -494,8 +494,8 @@ export default function SnippetsPage() {
                 whileHover={{ y: -8, scale: 1.02 }}
                 className={`backdrop-blur-md rounded-2xl p-6 border transition-all duration-300 group relative overflow-hidden ${
                   theme === 'dark'
-                    ? 'bg-cyber-surface/30 border-cyber-surface hover:border-cyber-cyan/50 hover:bg-cyber-surface/50'
-                    : 'bg-light-surface/30 border-light-surface hover:border-light-cyan/50 hover:bg-light-surface/50'
+                    ? 'bg-cyber-surface/30 border-cyber-surface hover:border-cyber-white/50 hover:bg-cyber-surface/50'
+                    : 'bg-light-surface/30 border-light-surface hover:border-light-white/50 hover:bg-light-surface/50'
                 }`}
               >
                 {/* Glow effect on hover */}
