@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
-import { motion, AnimatePresence, stagger } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { fetchSnippets, type Snippet } from "@/lib/supabase/snippets";
@@ -139,7 +139,6 @@ def process_data(df):
       y: 0,
       scale: 1,
       transition: {
-        type: "spring",
         stiffness: 300,
         damping: 25,
       },
@@ -152,7 +151,7 @@ def process_data(df):
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        // Remove 'type' or use allowed value, or just use spring props
         stiffness: 200,
         damping: 20,
       },

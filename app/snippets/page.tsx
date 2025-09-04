@@ -18,6 +18,7 @@ export default function SnippetsPage() {
   const [displayName, setDisplayName] = useState<string>("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const { theme } = useContext(ThemeContext);
+  
 
   useEffect(() => {
     const loadSnippets = async () => {
@@ -199,7 +200,6 @@ export default function SnippetsPage() {
       y: 0,
       scale: 1,
       transition: {
-        type: "spring",
         stiffness: 300,
         damping: 25,
       },
