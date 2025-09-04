@@ -291,13 +291,25 @@ export default function LayoutClient({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className={`flex-1 overflow-y-auto transition-all duration-300 ${
+            className={`flex-1 overflow-y-auto transition-all duration-300 relative ${
               theme === 'dark' 
                 ? 'bg-gradient-to-br from-cyber-black via-cyber-black to-cyber-surface/20' 
                 : 'bg-gradient-to-br from-light-bg via-light-bg to-light-surface/50'
             }`}
           >
-            <div className="grid-pattern min-h-full">
+            {/* Flowing background */}
+            <div className={`absolute inset-0 ${
+              theme === 'dark' ? 'flowing-bg' : 'flowing-bg-light'
+            }`} />
+            
+            {/* Floating orbs for ambiance */}
+            <div className="floating-orbs" />
+            
+            {/* Wave pattern overlay */}
+            <div className="wave-pattern absolute inset-0" />
+            
+            {/* Content */}
+            <div className="relative z-10 min-h-full">
               {children}
             </div>
           </motion.main>
