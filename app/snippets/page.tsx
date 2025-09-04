@@ -218,8 +218,8 @@ export default function SnippetsPage() {
           animate={{ opacity: 1, y: 0 }}
           className={`text-5xl lg:text-6xl font-bold mb-8 bg-gradient-to-r ${
             theme === 'dark' 
-              ? 'from-cyber-red via-cyber-purple to-cyber-cyan' 
-              : 'from-light-red via-light-purple to-light-cyan'
+              ? 'from-cyber-red via-cyber-purple to-cyber-white' 
+              : 'from-light-red via-light-purple to-light-white'
           } bg-clip-text text-transparent`}
         >
           Your Snippets
