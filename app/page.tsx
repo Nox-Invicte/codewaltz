@@ -21,7 +21,79 @@ export default function Home() {
         const data = await fetchSnippets();
         setSnippets(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load snippets");
+        // For demo purposes, show sample data when Supabase isn't configured
+        const sampleData: Snippet[] = [
+          {
+            id: "1",
+            title: "React Hook Example",
+            language: "javascript",
+            code: `import { useState, useEffect } from 'react';
+
+export function useCounter(initialValue = 0) {
+  const [count, setCount] = useState(initialValue);
+  
+  const increment = () => setCount(c => c + 1);
+  const decrement = () => setCount(c => c - 1);
+  const reset = () => setCount(initialValue);
+  
+  return { count, increment, decrement, reset };
+}`,
+            author: "CodeWaltz Demo",
+            user_id: "demo",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+          {
+            id: "2",
+            title: "Python Data Processing",
+            language: "python",
+            code: `import pandas as pd
+import numpy as np
+
+def process_data(df):
+    # Clean and transform data
+    df_clean = df.dropna()
+    df_clean['normalized'] = (df_clean['value'] - df_clean['value'].mean()) / df_clean['value'].std()
+    
+    return df_clean.groupby('category').agg({
+        'normalized': ['mean', 'std', 'count'],
+        'value': 'sum'
+    }).round(2)`,
+            author: "Data Scientist",
+            user_id: "demo",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+          {
+            id: "3",
+            title: "CSS Grid Layout",
+            language: "css",
+            code: `.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.grid-item {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.grid-item:hover {
+  transform: translateY(-5px);
+}`,
+            author: "UI Designer",
+            user_id: "demo",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ];
+        setSnippets(sampleData);
+        console.log("Using sample data for demo purposes");
       } finally {
         setLoading(false);
       }
