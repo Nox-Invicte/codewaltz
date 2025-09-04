@@ -369,7 +369,7 @@ def process_data(df):
               {/* Glow effect on hover */}
               <motion.div
                 className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-                  theme === 'dark' ? 'bg-gradient-to-br from-cyber-cyan/5 to-cyber-purple/5' : 'bg-gradient-to-br from-light-cyan/5 to-light-purple/5'
+                  theme === 'dark' ? 'bg-gradient-to-br from-cyber-white/5 to-cyber-purple/5' : 'bg-gradient-to-br from-light-white/5 to-light-purple/5'
                 }`}
               />
 
