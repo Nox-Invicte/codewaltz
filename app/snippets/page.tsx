@@ -402,8 +402,8 @@ export default function SnippetsPage() {
               onChange={handleInputChange}
               className={`w-full p-4 rounded-xl backdrop-blur-md border font-mono transition-all duration-300 ${
                 theme === 'dark'
-                  ? 'bg-cyber-surface/50 border-cyber-surface text-cyber-text placeholder-cyber-text-muted focus:border-cyber-cyan'
-                  : 'bg-light-surface/50 border-light-surface text-light-text placeholder-light-text-muted focus:border-light-cyan'
+                  ? 'bg-cyber-surface/50 border-cyber-surface text-cyber-text placeholder-cyber-text-muted focus:border-cyber-white'
+                  : 'bg-light-surface/50 border-light-surface text-light-text placeholder-light-text-muted focus:border-light-white'
               }`}
               required
             />
