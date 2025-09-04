@@ -73,7 +73,6 @@ export function UserInfo() {
         <Link href={`/profile/${user.id}`} className="block text-sm font-medium">
           <div className="flex items-center space-x-2">
             <motion.span
-              animate={{ rotate: [0, 360] }}
               transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
             >
               👤
@@ -93,10 +92,10 @@ export function UserInfo() {
       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Link
           href="/auth/login"
-          className={`block w-40 mx-auto px-4 py-2 rounded-xl text-center font-medium transition-all duration-300 ${
+          className={`block w-40 mx-auto px-4 py-2 rounded-xl text-center font-medium border transition-all duration-300 ${
             theme === 'dark'
-              ? 'bg-cyber-red text-white hover:bg-cyber-red/80 shadow-lg shadow-cyber-red/25'
-              : 'bg-light-red text-white hover:bg-light-red/80 shadow-lg shadow-light-red/25'
+              ? 'border-cyber-purple text-cyber-purple hover:bg-cyber-purple/10 hover:border-cyber-purple/50'
+              : 'border-light-purple text-light-purple hover:bg-light-purple/10 hover:border-light-purple/50'
           }`}
         >
           Sign in

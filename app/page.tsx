@@ -114,7 +114,8 @@ def process_data(df):
   const filteredSnippets = snippets.filter(snippet => {
     const matchesLanguage = selectedLanguage === "all" || snippet.language === selectedLanguage;
     const matchesSearch = snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         snippet.author.toLowerCase().includes(searchTerm.toLowerCase());
+                         snippet.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         snippet.code.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesLanguage && matchesSearch;
   });
 
@@ -173,9 +174,9 @@ def process_data(df):
         >
           <h1 className={`text-6xl lg:text-8xl font-bold mb-6 bg-gradient-to-r ${
             theme === 'dark' 
-              ? 'from-cyber-red via-cyber-purple to-cyber-cyan' 
-              : 'from-light-red via-light-purple to-light-cyan'
-          } bg-clip-text text-transparent`}>
+              ? 'from-cyber-red via-cyber-purple to-cyber-cyan text-cyber-text-muted' 
+              : 'from-light-red via-light-purple to-light-cyan text-light-text-muted'
+          } bg-clip-text`}>
             CodeWaltz
           </h1>
           <p className={`text-xl lg:text-2xl mb-8 max-w-3xl mx-auto ${
@@ -259,7 +260,7 @@ def process_data(df):
           theme === 'dark' 
             ? 'from-cyber-red via-cyber-purple to-cyber-white' 
             : 'from-light-red via-light-purple to-light-white'
-        } bg-clip-text text-transparent`}>
+        } bg-clip-text`}>
           CodeWaltz
         </h1>
         <motion.p
@@ -315,7 +316,7 @@ def process_data(df):
               selectedLanguage === "all"
                 ? theme === 'dark'
                   ? 'bg-cyber-red text-white border-cyber-red shadow-lg shadow-cyber-red/25'
-                  : 'bg-light-red text-white border-light-red shadow-lg shadow-light-red/25'
+                  : 'bg-light-red text-black border-light-red shadow-lg shadow-light-red/25'
                 : theme === 'dark'
                   ? 'bg-cyber-surface/50 text-cyber-text-muted border-cyber-surface hover:border-cyber-red/50'
                   : 'bg-light-surface/50 text-light-text-muted border-light-surface hover:border-light-red/50'
@@ -333,7 +334,7 @@ def process_data(df):
                 selectedLanguage === lang
                   ? theme === 'dark'
                     ? 'bg-cyber-purple text-white border-cyber-purple shadow-lg shadow-cyber-purple/25'
-                    : 'bg-light-purple text-white border-light-purple shadow-lg shadow-light-purple/25'
+                    : 'bg-light-purple text-black border-light-purple shadow-lg shadow-light-purple/25'
                   : theme === 'dark'
                     ? 'bg-cyber-surface/50 text-cyber-text-muted border-cyber-surface hover:border-cyber-purple/50'
                     : 'bg-light-surface/50 text-light-text-muted border-light-surface hover:border-light-purple/50'
@@ -418,7 +419,7 @@ def process_data(df):
                     fontFamily: "var(--font-geist-mono)",
                     margin: 0,
                     borderRadius: "12px",
-                    background: theme === 'dark' ? "#0f0f0f" : "#f8f8f8",
+                    background: theme === 'dark' ? "#282c34" : "#f8f8f8",
                   }}
                   showLineNumbers
                 >

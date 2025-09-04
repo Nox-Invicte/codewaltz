@@ -368,7 +368,7 @@ export default function SnippetsPage() {
                 onChange={handleInputChange}
                 className={`w-full p-4 rounded-xl backdrop-blur-md border transition-all duration-300 ${
                   theme === 'dark'
-                    ? 'bg-cyber-surface/50 border-cyber-surface text-cyber-text focus:border-cyber-purple'
+                    ? 'bg-black/40 border-cyber-surface text-cyber-text focus:border-cyber-purple'
                     : 'bg-light-surface/50 border-light-surface text-light-text focus:border-light-purple'
                 }`}
               >
@@ -448,8 +448,8 @@ export default function SnippetsPage() {
               type="submit"
               className={`px-8 py-3 rounded-xl font-bold transition-all duration-300 ${
                 theme === 'dark'
-                  ? 'bg-cyber-red text-white hover:bg-cyber-red/80 shadow-lg shadow-cyber-red/25'
-                  : 'bg-light-red text-white hover:bg-light-red/80 shadow-lg shadow-light-red/25'
+                  ? 'bg-cyber-red text-white hover:bg-cyber-red/80 shadow-lg shadow-cyber-red/25 border'
+                  : 'bg-light-red text-black hover:bg-light-red/80 shadow-lg shadow-light-red/25 border'
               }`}
             >
               {editingId !== null ? "Update Snippet" : "Add Snippet"}
@@ -550,7 +550,7 @@ export default function SnippetsPage() {
                       fontFamily: "var(--font-geist-mono)",
                       margin: 0,
                       borderRadius: "12px",
-                      background: theme === 'dark' ? "#0f0f0f" : "#f8f8f8",
+                      background: theme === 'dark' ? "#282C34" : "#f8f8f8",
                     }}
                     showLineNumbers
                   >
