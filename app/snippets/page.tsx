@@ -585,8 +585,8 @@ export default function SnippetsPage() {
                       onClick={() => handleEdit(snippet.id)}
                       className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
                         theme === 'dark'
-                          ? 'bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan/30 hover:bg-cyber-cyan/30'
-                          : 'bg-light-cyan/20 text-light-cyan border border-light-cyan/30 hover:bg-light-cyan/30'
+                          ? 'bg-cyber-white/20 text-cyber-white border border-cyber-white/30 hover:bg-cyber-white/30'
+                          : 'bg-light-white/20 text-light-white border border-light-white/30 hover:bg-light-white/30'
                       }`}
                     >
                       Edit
