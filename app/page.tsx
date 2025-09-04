@@ -192,7 +192,7 @@ def process_data(df):
         >
           <div className={`w-3 h-3 rounded-full ${theme === 'dark' ? 'bg-cyber-red' : 'bg-light-red'}`} />
           <div className={`w-3 h-3 rounded-full ${theme === 'dark' ? 'bg-cyber-purple' : 'bg-light-purple'}`} />
-          <div className={`w-3 h-3 rounded-full ${theme === 'dark' ? 'bg-cyber-cyan' : 'bg-light-cyan'}`} />
+          <div className={`w-3 h-3 rounded-full ${theme === 'dark' ? 'bg-cyber-white' : 'bg-light-white'}`} />
           <span className={`ml-4 text-lg ${theme === 'dark' ? 'text-cyber-text-muted' : 'text-light-text-muted'}`}>
             Loading snippets...
           </span>
