@@ -272,8 +272,8 @@ export default function LayoutClient({
             <motion.svg
               className={`w-5 h-5 transition-all duration-500 ${
                 theme === "dark" 
-                  ? "opacity-100 text-cyber-cyan scale-100" 
-                  : "opacity-0 text-light-cyan scale-75"
+                  ? "opacity-100 text-cyber-white scale-100" 
+                  : "opacity-0 text-light-white scale-75"
               }`}
               fill="none"
               stroke="currentColor"
