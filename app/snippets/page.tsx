@@ -512,11 +512,11 @@ export default function SnippetsPage() {
                   className={`absolute top-4 right-4 z-10 p-2 rounded-lg backdrop-blur-md transition-all duration-300 ${
                     copiedId === snippet.id
                       ? theme === 'dark'
-                        ? 'bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan/50'
-                        : 'bg-light-cyan/20 text-light-cyan border border-light-cyan/50'
+                        ? 'bg-cyber-white/20 text-cyber-white border border-cyber-white/50'
+                        : 'bg-light-white/20 text-light-white border border-light-white/50'
                       : theme === 'dark'
-                        ? 'bg-cyber-surface/80 text-cyber-text-muted border border-cyber-surface opacity-0 group-hover:opacity-100 hover:text-cyber-cyan hover:border-cyber-cyan/50'
-                        : 'bg-light-surface/80 text-light-text-muted border border-light-surface opacity-0 group-hover:opacity-100 hover:text-light-cyan hover:border-light-cyan/50'
+                        ? 'bg-cyber-surface/80 text-cyber-text-muted border border-cyber-surface opacity-0 group-hover:opacity-100 hover:text-cyber-white hover:border-cyber-white/50'
+                        : 'bg-light-surface/80 text-light-text-muted border border-light-surface opacity-0 group-hover:opacity-100 hover:text-light-white hover:border-light-white/50'
                   }`}
                   onClick={() => handleCopy(snippet.code, snippet.id)}
                 >
