@@ -11,6 +11,29 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Cyberpunk Dark Mode Palette
+        cyber: {
+          'black': '#0A0A0A',          // Deep Black (base canvas)
+          'surface': '#121212',         // Cards/Sections
+          'red': '#FF003C',            // Neon Red (primary accent)
+          'purple': '#9D4EDD',         // Futuristic purple glow
+          'cyan': '#00FFF7',           // Electric Cyan (highlights)
+          'text': '#EAEAEA',           // Primary text
+          'text-muted': '#B3B3B3',     // Secondary text
+          'orange': '#FF5F1F',         // Error/Warning
+        },
+        // Light Mode (Futuristic Sleek)
+        light: {
+          'bg': '#FAFAFA',             // Almost White
+          'surface': '#F0F0F3',        // Subtle light gray
+          'red': '#E60026',            // Crimson Red
+          'purple': '#7A3EEB',         // Tech Purple
+          'cyan': '#00B8C9',           // Cyber Cyan
+          'text': '#1A1A1A',           // Near-black
+          'text-muted': '#555555',     // Medium gray
+          'orange': '#FF3B30',         // Clear red warning
+        },
+        // Keep existing shadcn colors for compatibility
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -56,6 +79,42 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        'geist-sans': ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
+        'geist-mono': ['var(--font-geist-mono)', 'monospace'],
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'slide-up': 'slideUp 0.4s ease-out',
+        'slide-down': 'slideDown 0.4s ease-out',
+        'glow': 'glow 2s ease-in-out infinite alternate',
+        'pulse-glow': 'pulseGlow 1.5s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        glow: {
+          '0%': { boxShadow: '0 0 5px currentColor' },
+          '100%': { boxShadow: '0 0 20px currentColor, 0 0 30px currentColor' },
+        },
+        pulseGlow: {
+          '0%, 100%': { boxShadow: '0 0 5px currentColor' },
+          '50%': { boxShadow: '0 0 15px currentColor, 0 0 25px currentColor' },
+        },
+      },
+      backdropBlur: {
+        xs: '2px',
       },
     },
   },

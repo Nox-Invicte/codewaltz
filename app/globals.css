@@ -1,8 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #000000;
+  --background: #0A0A0A;
+  --foreground: #EAEAEA;
+  --surface: #121212;
+  --primary: #FF003C;
+  --secondary: #9D4EDD;
+  --accent: #00FFF7;
+}
+
+[data-theme="light"] {
+  --background: #FAFAFA;
+  --foreground: #1A1A1A;
+  --surface: #F0F0F3;
+  --primary: #E60026;
+  --secondary: #7A3EEB;
+  --accent: #00B8C9;
 }
 
 @theme inline {
@@ -12,19 +25,69 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: transparent;
-    --foreground: #000000;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+/* Glass morphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-light {
+  background: rgba(0, 0, 0, 0.02);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Neon glow effects */
+.neon-red {
+  box-shadow: 0 0 10px #FF003C, 0 0 20px #FF003C, 0 0 30px #FF003C;
+}
+
+.neon-purple {
+  box-shadow: 0 0 10px #9D4EDD, 0 0 20px #9D4EDD, 0 0 30px #9D4EDD;
+}
+
+.neon-cyan {
+  box-shadow: 0 0 10px #00FFF7, 0 0 20px #00FFF7, 0 0 30px #00FFF7;
+}
+
+/* Modern theme toggle */
 .theme-checkbox {
   --toggle-size: 16px;
   -webkit-appearance: none;
@@ -32,18 +95,15 @@ body {
   appearance: none;
   width: 3.25em;
   height: 2.125em;
-  background: -webkit-gradient(linear, left top, right top, color-stop(50%, #efefef), color-stop(50%, #2a2a2a)) no-repeat;
-  background: -o-linear-gradient(left, #efefef 50%, #2a2a2a 50%) no-repeat;
-  background: linear-gradient(to right, #efefef 50%, #2a2a2a 50%) no-repeat;
+  background: linear-gradient(to right, var(--surface) 50%, var(--primary) 50%) no-repeat;
   background-size: 205%;
   background-position: 0;
-  -webkit-transition: 0.4s;
-  -o-transition: 0.4s;
-  transition: 0.4s;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 99em;
   position: relative;
   cursor: pointer;
   font-size: var(--toggle-size);
+  border: 2px solid var(--primary);
 }
 
 .theme-checkbox::before {
@@ -51,24 +111,63 @@ body {
   width: 1.25em;
   height: 1.25em;
   position: absolute;
-  top: 0.438em;
-  left: 0.438em;
-  background: -webkit-gradient(linear, left top, right top, color-stop(50%, #efefef), color-stop(50%, #2a2a2a)) no-repeat;
-  background: -o-linear-gradient(left, #efefef 50%, #2a2a2a 50%) no-repeat;
-  background: linear-gradient(to right, #efefef 50%, #2a2a2a 50%) no-repeat;
-  background-size: 205%;
-  background-position: 100%;
+  top: 0.3em;
+  left: 0.3em;
+  background: var(--primary);
   border-radius: 50%;
-  -webkit-transition: 0.4s;
-  -o-transition: 0.4s;
-  transition: 0.4s;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px var(--primary);
 }
 
 .theme-checkbox:checked::before {
-  left: calc(100% - 1.25em - 0.438em);
-  background-position: 0;
+  left: calc(100% - 1.25em - 0.3em);
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
 }
 
 .theme-checkbox:checked {
   background-position: 100%;
+  border-color: var(--accent);
+}
+
+/* Hover effects */
+.hover-glow:hover {
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px var(--primary);
+}
+
+/* Loading animation */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Grid patterns for futuristic feel */
+.grid-pattern {
+  background-image: 
+    linear-gradient(rgba(255, 0, 60, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 60, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, input, textarea, select {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus styles */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
