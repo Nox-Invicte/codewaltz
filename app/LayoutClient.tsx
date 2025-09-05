@@ -202,7 +202,8 @@ export default function LayoutClient({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="w-64 h-full card bordered text-[var(--text-primary)] shadow-xl flex flex-col p-6 gap-6"
+              className="w-72 max-w-[90vw] h-full card bordered text-[var(--text-primary)] shadow-2xl flex flex-col p-6 gap-6 overflow-y-auto"
+              style={{ boxShadow: '0 0 32px 0 rgba(0,0,0,0.25)' }}
             >
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xl font-bold primary-accent">Menu</span>
@@ -230,10 +231,12 @@ export default function LayoutClient({
                 ))}
               </nav>
             </motion.div>
-            {/* Clickable area to close menu */}
-            <div className="flex-1 h-full" onClick={() => setIsMobileMenuOpen(false)} />
+            {/* Overlay to close menu */}
+            <div className="flex-1 h-full bg-black/40 backdrop-blur-sm cursor-pointer" onClick={() => setIsMobileMenuOpen(false)} />
           </motion.div>
         )}
+  {/* Prevent background scroll when mobile menu is open */}
+  {isMobileMenuOpen && <style>{`body { overflow: hidden !important; touch-action: none; }`}</style>}
       </AnimatePresence>
             <div className="flex items-center gap-3">
               {!currentUser ? (
