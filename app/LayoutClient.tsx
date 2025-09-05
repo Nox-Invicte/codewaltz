@@ -186,17 +186,15 @@ export default function LayoutClient({
       {/* Mobile Sidebar Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              key="overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 bg-black/70"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
+          <motion.div
+            key="mobile-menu-bg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex"
+            style={{ background: 'var(--card-bg)' }}
+          >
             {/* Sidebar */}
             <motion.div
               key="sidebar"
@@ -204,7 +202,7 @@ export default function LayoutClient({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className="fixed top-0 left-0 bottom-0 z-50 w-64 card bordered text-[var(--text-primary)] shadow-xl flex flex-col p-6 gap-6"
+              className="w-64 h-full card bordered text-[var(--text-primary)] shadow-xl flex flex-col p-6 gap-6"
             >
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xl font-bold primary-accent">Menu</span>
@@ -232,7 +230,9 @@ export default function LayoutClient({
                 ))}
               </nav>
             </motion.div>
-          </>
+            {/* Clickable area to close menu */}
+            <div className="flex-1 h-full" onClick={() => setIsMobileMenuOpen(false)} />
+          </motion.div>
         )}
       </AnimatePresence>
             <div className="flex items-center gap-3">
