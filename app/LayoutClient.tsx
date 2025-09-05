@@ -186,15 +186,13 @@ export default function LayoutClient({
       {/* Mobile Sidebar Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            key="mobile-menu-bg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex"
-            style={{ background: 'var(--card-bg)' }}
-          >
+          <>
+            {/* Overlay */}
+            <div
+              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label="Close menu overlay"
+            />
             {/* Sidebar */}
             <motion.div
               key="sidebar"
@@ -202,7 +200,7 @@ export default function LayoutClient({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="w-72 max-w-[90vw] h-full card bordered text-[var(--text-primary)] shadow-2xl flex flex-col p-6 gap-6 overflow-y-auto"
+              className="fixed top-0 left-0 h-full w-72 max-w-[90vw] z-50 bg-white dark:bg-[var(--card-bg)] border-r border-[var(--border)] shadow-2xl flex flex-col p-6 gap-6 overflow-y-auto"
               style={{ boxShadow: '0 0 32px 0 rgba(0,0,0,0.25)' }}
             >
               <div className="flex items-center justify-between mb-4">
@@ -231,9 +229,7 @@ export default function LayoutClient({
                 ))}
               </nav>
             </motion.div>
-            {/* Overlay to close menu */}
-            <div className="flex-1 h-full bg-black/40 backdrop-blur-sm cursor-pointer" onClick={() => setIsMobileMenuOpen(false)} />
-          </motion.div>
+          </>
         )}
   {/* Prevent background scroll when mobile menu is open */}
   {isMobileMenuOpen && <style>{`body { overflow: hidden !important; touch-action: none; }`}</style>}
