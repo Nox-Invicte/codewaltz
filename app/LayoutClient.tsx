@@ -200,7 +200,7 @@ export default function LayoutClient({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed top-0 left-0 h-full w-72 max-w-[90vw] z-50 bg-white dark:bg-[var(--card-bg)] border-r border-[var(--border)] shadow-2xl flex flex-col p-6 gap-6 overflow-y-auto"
+              className="fixed inset-y-0 left-0 h-screen w-72 max-w-[90vw] z-50 bg-white dark:bg-[var(--card-bg)] border-r border-[var(--border)] shadow-2xl flex flex-col p-6 gap-6 overflow-y-auto"
               style={{ boxShadow: '0 0 32px 0 rgba(0,0,0,0.25)' }}
             >
               <div className="flex items-center justify-between mb-4">
