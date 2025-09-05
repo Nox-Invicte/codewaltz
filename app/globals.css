@@ -1,29 +1,28 @@
 @import "tailwindcss";
 
+
 :root {
-  --background: #0A0A0A;
-  --foreground: #EAEAEA;
-  --surface: #121212;
-  --primary: #FF003C;
-  --secondary: #9D4EDD;
-  --accent: #FFFFFF;
+  /* 🌑 Dark Mode (Hacker Vibes) */
+  --background: #0a0f0d;
+  --card-bg: #111827;
+  --primary-accent: #00ff88;
+  --secondary-accent: #38bdf8;
+  --highlight: #f43f5e;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --border: #22292f;
 }
 
 [data-theme="light"] {
-  --background: #FAFAFA;
-  --foreground: #1A1A1A;
-  --surface: #F0F0F3;
-  --primary: #E60026;
-  --secondary: #7A3EEB;
-  --accent: #FFFFFF;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* ☀ Light Mode (Clean Techy Vibe) */
+  --background: #f8fafc;
+  --card-bg: #ffffff;
+  --primary-accent: #16a34a;
+  --secondary-accent: #2563eb;
+  --highlight: #dc2626;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --border: #e2e8f0;
 
 * {
   box-sizing: border-box;
@@ -35,12 +34,55 @@ html {
 
 body {
   background: var(--background);
-  color: var(--foreground);
+  color: var(--text-primary);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+}
+
+.card, .secondary-bg {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-radius: 1rem;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.10);
+  border: 1px solid var(--border);
+}
+
+.primary-accent {
+  color: var(--primary-accent);
+  text-shadow: 0 0 8px rgba(0,255,136,0.5);
+}
+
+.secondary-accent {
+  color: var(--secondary-accent);
+  text-shadow: 0 0 8px rgba(56,189,248,0.5);
+}
+
+.glow-green {
+  box-shadow: 0 0 8px rgba(0,255,136,0.5);
+}
+
+.glow-blue {
+  box-shadow: 0 0 8px rgba(56,189,248,0.5);
+}
+
+.highlight, .warning {
+  color: var(--highlight);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.bordered {
+  border: 1px solid var(--border);
 }
 
 /* Custom scrollbar */

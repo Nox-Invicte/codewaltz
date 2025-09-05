@@ -133,22 +133,16 @@ export default function LayoutClient({
   return (
     <ThemeContext.Provider value={{ theme, setTheme: setThemeAndSave }}>
       <div
-        className={`flex h-screen w-screen max-w-full max-h-full overflow-hidden font-geist-sans relative ${
-          theme === 'dark' 
-            ? 'bg-cyber-black text-cyber-text' 
-            : 'bg-light-bg text-light-text'
-        }`}
+        className={`flex h-screen w-screen max-w-full max-h-full overflow-hidden font-geist-sans relative bg-[var(--background)] text-[var(--text-primary)]`}
       >
         {/* Top Navbar */}
         <header
-          className={`fixed top-0 left-0 right-0 z-40 border-b backdrop-blur-md ${
-            theme === 'dark' ? 'bg-cyber-surface/80 border-cyber-surface' : 'bg-light-surface/70 border-light-surface'
-          }`}
+          className="fixed top-0 left-0 right-0 z-40 border-b backdrop-blur-md card bordered"
         >
           {theme === 'dark' && (
             <div
-              className="pointer-events-none absolute inset-0"
-              style={{ boxShadow: '0 0 35px rgba(224,36,68,0.25), 0 0 65px rgba(157,78,221,0.18)' }}
+              className="pointer-events-none absolute inset-0 glow-green glow-blue"
+              style={{ boxShadow: '0 0 35px rgba(0,255,136,0.25), 0 0 65px rgba(56,189,248,0.18)' }}
             />
           )}
           <div className="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between relative">
@@ -156,8 +150,8 @@ export default function LayoutClient({
             <a href="/" className="group ml-12">
               <motion.span
                 whileHover={{ scale: 1.05 }}
-                className={`text-2xl md:text-3xl font-bold ${theme === 'dark' ? 'text-cyber-red' : 'text-light-red'}`}
-                style={{ textShadow: theme === 'dark' ? '0 0 10px rgba(224,36,68,0.75), 0 0 16px rgba(157,78,221,0.45)' : '0 0 6px rgba(204,17,46,0.35)' }}
+                className="text-2xl md:text-3xl font-bold primary-accent"
+                style={{ textShadow: '0 0 8px rgba(0,255,136,0.5)' }}
               >
                 CodeWaltz
               </motion.span>
@@ -171,10 +165,8 @@ export default function LayoutClient({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 * index }}
                   whileHover={{ scale: 1.05 }}
-                  className={`transition-all ${theme === 'dark' ? 'text-cyber-text' : 'text-light-text'}`}
+                  className="transition-all text-secondary"
                   style={{ textShadow: 'none' }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textShadow = theme === 'dark' ? '0 0 10px rgba(224,36,68,0.7), 0 0 14px rgba(157,78,221,0.45)' : '0 0 8px rgba(107,53,213,0.4)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textShadow = 'none'; }}
                 >
                   {item.name}
                 </motion.a>
@@ -185,13 +177,13 @@ export default function LayoutClient({
                 <div className="hidden sm:flex items-center gap-3">
                   <a
                     href="/auth/login"
-                    className={`px-3 py-1.5 rounded-lg border font-medium text-sm transition-all ${theme === 'dark' ? 'border-cyber-surface hover:border-cyber-red/40' : 'border-light-surface hover:border-light-red/40'}`}
+                    className="px-3 py-1.5 rounded-lg border font-medium text-sm transition-all bordered hover:highlight"
                   >
                     Sign in
                   </a>
                   <a
                     href="/auth/sign-up"
-                    className={`px-3 py-1.5 rounded-lg text-sm border font-medium transition-all ${theme === 'dark' ? 'bg-cyber-red text-white hover:bg-cyber-red/80' : 'bg-light-red text-black hover:bg-light-red/80'}`}
+                    className="px-3 py-1.5 rounded-lg text-sm border font-medium transition-all primary-accent glow-green"
                   >
                     Sign up
                   </a>
@@ -200,7 +192,7 @@ export default function LayoutClient({
                 <div className="relative" ref={menuRef}>
                   <button
                     onClick={() => setIsProfileMenuOpen((v) => !v)}
-                    className={`w-9 h-9 rounded-full flex items-center justify-center border backdrop-blur-md ${theme === 'dark' ? 'bg-cyber-surface/70 border-cyber-surface text-cyber-text' : 'bg-light-surface/70 border-light-surface text-light-text'}`}
+                    className="w-9 h-9 rounded-full flex items-center justify-center border backdrop-blur-md card bordered"
                     aria-haspopup="menu"
                     aria-expanded={isProfileMenuOpen}
                   >
@@ -213,25 +205,20 @@ export default function LayoutClient({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -6 }}
                         transition={{ duration: 0.15 }}
-                        className={`absolute right-0 mt-2 w-56 rounded-xl border shadow-lg z-50 overflow-hidden
-                          bg-gradient-to-br from-black/90 via-gray-800/90 to-blue-800/80 border-cyber-surface text-white
-                          
-                          
-                          backdrop-blur-2xl
-                        `}
+                        className="absolute right-0 mt-2 w-56 rounded-xl border shadow-lg z-50 overflow-hidden card bordered text-primary backdrop-blur-2xl"
                         style={{ boxShadow: '0 4px 32px 0 rgba(0, 80, 255, 0.10)' }}
                         role="menu"
                       >
-                        <div className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-cyber-text' : 'text-light-text'}`}>
+                        <div className="px-4 py-3 text-sm text-primary">
                           Signed in as
                           <div className="font-semibold truncate">
                             {currentUser.user_metadata?.username || currentUser.user_metadata?.full_name || currentUser.email}
                           </div>
                         </div>
-                        <div className={`${theme === 'dark' ? 'border-t border-cyber-surface' : 'border-t border-light-surface'}`} />
+                        <div className="border-t bordered" />
                         <a
                           href={`/profile/${currentUser.id}`}
-                          className={`block px-4 py-2 text-sm hover:bg-black/5 `}
+                          className="block px-4 py-2 text-sm hover:highlight"
                           role="menuitem"
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
@@ -239,7 +226,7 @@ export default function LayoutClient({
                         </a>
                         <button
                           onClick={handleSignOut}
-                          className={`w-full text-left px-4 py-2 text-sm hover:bg-black/5 `}
+                          className="w-full text-left px-4 py-2 text-sm hover:highlight"
                           role="menuitem"
                         >
                           Log out
@@ -259,15 +246,15 @@ export default function LayoutClient({
         <button
           onClick={() => setThemeAndSave(theme === 'light' ? 'dark' : 'light')}
           aria-label="Toggle theme"
-          className="fixed z-50 top-25 right-6 p-2 rounded-full border border-transparent hover:border-cyber-red/60 dark:hover:border-light-red/60 bg-transparent flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyber-red dark:focus:ring-light-red transition-colors shadow"
+          className="fixed z-50 top-25 right-6 p-2 rounded-full border border-transparent hover:highlight bg-transparent flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-highlight transition-colors shadow"
           style={{ pointerEvents: 'auto' }}
         >
           {theme === 'dark' ? (
-            <svg className="w-6 h-6 text-cyber-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-primary-accent" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
             </svg>
           ) : (
-            <svg className="w-6 h-6 text-light-orange" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-primary-accent" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="5" />
               <path d="M13 1v2M12 21v2M4.22 4.22l1.42 1.42M18.96 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M19.36 5.64l1.42-1.42" />
             </svg>
@@ -282,11 +269,7 @@ export default function LayoutClient({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className={`flex-1 overflow-y-auto transition-all duration-300 relative pt-24 md:pt-28 ${
-              theme === 'dark' 
-                ? 'bg-gradient-to-br from-cyber-black via-cyber-black to-cyber-surface/20' 
-                : 'bg-gradient-to-br from-light-bg via-light-bg to-light-surface/50'
-            }`}
+            className="flex-1 overflow-y-auto transition-all duration-300 relative pt-24 md:pt-28 bg-[var(--background)]"
           >
             {/* Flowing background */}
             <div className={`absolute inset-0 ${
