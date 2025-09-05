@@ -156,6 +156,7 @@ export default function LayoutClient({
                 CodeWaltz
               </motion.span>
             </a>
+            {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-8 text-lg">
               {navItems.map((item, index) => (
                 <motion.a
@@ -172,6 +173,68 @@ export default function LayoutClient({
                 </motion.a>
               ))}
             </nav>
+            {/* Mobile Nav Button */}
+            <button
+              className="md:hidden ml-2 p-2 rounded-lg border bordered bg-[var(--card-bg)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-highlight"
+              aria-label="Open menu"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+      {/* Mobile Sidebar Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              key="overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-50 bg-black/70"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            {/* Sidebar */}
+            <motion.div
+              key="sidebar"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="fixed top-0 left-0 bottom-0 z-50 w-64 bg-[var(--card-bg)] text-[var(--text-primary)] shadow-xl flex flex-col p-6 gap-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xl font-bold primary-accent">Menu</span>
+                <button
+                  className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-highlight"
+                  aria-label="Close menu"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M6 6l12 12M6 18L18 6" />
+                  </svg>
+                </button>
+              </div>
+              <nav className="flex flex-col gap-4">
+                {navItems.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href === "__profile__" ? (currentUser ? `/profile/${currentUser.id}` : "/auth/login") : item.href}
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--background)] transition-colors text-lg font-medium"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <span>{item.icon}</span>
+                    <span>{item.name}</span>
+                  </a>
+                ))}
+              </nav>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
             <div className="flex items-center gap-3">
               {!currentUser ? (
                 <div className="hidden sm:flex items-center gap-3">
