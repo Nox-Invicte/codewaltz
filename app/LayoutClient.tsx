@@ -2,10 +2,13 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
+import Avatar from "@/components/ui/avatar";
 import { motion, AnimatePresence } from "framer-motion";
 import "./globals.css";
 import { UserInfo } from "@/components/user-info";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 // Create ThemeContext
 export const ThemeContext = createContext<{
@@ -28,6 +31,9 @@ export default function LayoutClient({
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   // Load theme from localStorage on mount
   useEffect(() => {
@@ -70,6 +76,32 @@ export default function LayoutClient({
     }
   }, []);
 
+  // Load current user and handle click-outside for profile menu
+  useEffect(() => {
+    const loadUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+    loadUser();
+
+    const onClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('click', onClickOutside);
+    return () => document.removeEventListener('click', onClickOutside);
+  }, []);
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setCurrentUser(null);
+    setIsProfileMenuOpen(false);
+    window.location.href = "/";
+  };
+
   // Wrap setTheme to save to localStorage
   const setThemeAndSave = (newTheme: "light" | "dark") => {
     setTheme(newTheme);
@@ -80,7 +112,7 @@ export default function LayoutClient({
   const navItems = [
     { name: "Home", href: "/", icon: "🏠" },
     { name: "Snippets", href: "/snippets", icon: "📝" },
-    { name: "Settings", href: "/settings", icon: "⚙️" },
+    { name: "Dashboard", href: "__profile__", icon: "📊" },
     { name: "About", href: "/about", icon: "ℹ️" },
   ];
 
@@ -107,189 +139,150 @@ export default function LayoutClient({
             : 'bg-light-bg text-light-text'
         }`}
       >
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className={`fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg backdrop-blur-md transition-all duration-300 ${
-            theme === 'dark'
-              ? 'bg-cyber-surface/80 text-cyber-text border border-cyber-red/30 hover:border-cyber-red'
-              : 'bg-light-surface/80 text-light-text border border-light-red/30 hover:border-light-red'
+        {/* Top Navbar */}
+        <header
+          className={`fixed top-0 left-0 right-0 z-40 border-b backdrop-blur-md ${
+            theme === 'dark' ? 'bg-cyber-surface/80 border-cyber-surface' : 'bg-light-surface/70 border-light-surface'
           }`}
         >
-          <motion.div
-            animate={{ rotate: isMobileMenuOpen ? 45 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {isMobileMenuOpen ? "✕" : "☰"}
-          </motion.div>
-        </button>
-
-        {/* Mobile Overlay */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={overlayVariants}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-              onClick={() => setIsMobileMenuOpen(false)}
+          {theme === 'dark' && (
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{ boxShadow: '0 0 35px rgba(224,36,68,0.25), 0 0 65px rgba(157,78,221,0.18)' }}
             />
           )}
-        </AnimatePresence>
-
-        {/* Sidebar */}
-        <motion.aside
-          initial="visible"
-          animate={isMobileMenuOpen ? "visible" : { x: 0 }}
-          variants={sidebarVariants}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className={`fixed lg:relative z-40 w-72 h-full backdrop-blur-md border-r transition-all duration-300 ${
-            theme === 'dark'
-              ? 'bg-cyber-surface/90 border-cyber-red/20'
-              : 'bg-light-surface/90 border-light-red/20'
-          } ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
-        >
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className={`p-6 border-b ${
-              theme === 'dark' ? 'border-cyber-red/20' : 'border-light-red/20'
-            }`}
-          >
-            <a href="/" className="group block">
-              <motion.h1
+          <div className="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between relative">
+            {/* ...existing code... */}
+            <a href="/" className="group ml-12">
+              <motion.span
                 whileHover={{ scale: 1.05 }}
-                className={`text-2xl font-bold text-center transition-all duration-300 ${
-                  theme === 'dark' ? 'text-cyber-red' : 'text-light-red'
-                }`}
+                className={`text-2xl md:text-3xl font-bold ${theme === 'dark' ? 'text-cyber-red' : 'text-light-red'}`}
+                style={{ textShadow: theme === 'dark' ? '0 0 10px rgba(224,36,68,0.75), 0 0 16px rgba(157,78,221,0.45)' : '0 0 6px rgba(204,17,46,0.35)' }}
               >
-                <span className="relative">
-                  CodeWaltz
-                  <motion.div
-                    className={`absolute -inset-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                      theme === 'dark' ? 'bg-cyber-red/10' : 'bg-light-red/10'
-                    }`}
-                    animate={{
-                      boxShadow: theme === 'dark' 
-                        ? ['0 0 0px #FF003C', '0 0 20px #FF003C', '0 0 0px #FF003C']
-                        : ['0 0 0px #E60026', '0 0 20px #E60026', '0 0 0px #E60026']
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </span>
-              </motion.h1>
+                CodeWaltz
+              </motion.span>
             </a>
-          </motion.div>
-
-          {/* Navigation */}
-          <nav className="flex-1 p-4">
-            <ul className="space-y-3">
+            <nav className="hidden md:flex items-center gap-8 text-lg">
               {navItems.map((item, index) => (
-                <motion.li
+                <motion.a
                   key={item.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 + index * 0.1 }}
+                  href={item.href === "__profile__" ? (currentUser ? `/profile/${currentUser.id}` : "/auth/login") : item.href}
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 * index }}
+                  whileHover={{ scale: 1.05 }}
+                  className={`transition-all ${theme === 'dark' ? 'text-cyber-text' : 'text-light-text'}`}
+                  style={{ textShadow: 'none' }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textShadow = theme === 'dark' ? '0 0 10px rgba(224,36,68,0.7), 0 0 14px rgba(157,78,221,0.45)' : '0 0 8px rgba(107,53,213,0.4)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textShadow = 'none'; }}
                 >
-                  <a
-                    href={item.href}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg group transition-all duration-300 hover:scale-105 ${
-                      theme === 'dark'
-                        ? 'hover:bg-cyber-red/10 hover:border-cyber-red/30 border border-transparent text-cyber-text'
-                        : 'hover:bg-light-red/10 hover:border-light-red/30 border border-transparent text-light-text'
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="text-xl">{item.icon}</span>
-                    <span className="font-medium">{item.name}</span>
-                    <motion.div
-                      className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
-                      whileHover={{ x: 5 }}
-                    >
-                      →
-                    </motion.div>
-                  </a>
-                </motion.li>
+                  {item.name}
+                </motion.a>
               ))}
-            </ul>
-          </nav>
+            </nav>
+            <div className="flex items-center gap-3">
+              {!currentUser ? (
+                <div className="hidden sm:flex items-center gap-3">
+                  <a
+                    href="/auth/login"
+                    className={`px-3 py-1.5 rounded-lg border font-medium text-sm transition-all ${theme === 'dark' ? 'border-cyber-surface hover:border-cyber-red/40' : 'border-light-surface hover:border-light-red/40'}`}
+                  >
+                    Sign in
+                  </a>
+                  <a
+                    href="/auth/sign-up"
+                    className={`px-3 py-1.5 rounded-lg text-sm border font-medium transition-all ${theme === 'dark' ? 'bg-cyber-red text-white hover:bg-cyber-red/80' : 'bg-light-red text-black hover:bg-light-red/80'}`}
+                  >
+                    Sign up
+                  </a>
+                </div>
+              ) : (
+                <div className="relative" ref={menuRef}>
+                  <button
+                    onClick={() => setIsProfileMenuOpen((v) => !v)}
+                    className={`w-9 h-9 rounded-full flex items-center justify-center border backdrop-blur-md ${theme === 'dark' ? 'bg-cyber-surface/70 border-cyber-surface text-cyber-text' : 'bg-light-surface/70 border-light-surface text-light-text'}`}
+                    aria-haspopup="menu"
+                    aria-expanded={isProfileMenuOpen}
+                  >
+                    <Avatar url={currentUser?.user_metadata?.avatar_url} size={32} />
+                  </button>
+                  <AnimatePresence>
+                    {isProfileMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.15 }}
+                        className={`absolute right-0 mt-2 w-56 rounded-xl border shadow-lg z-50 overflow-hidden
+                          bg-gradient-to-br from-black/90 via-gray-800/90 to-blue-800/80 border-cyber-surface text-white
+                          
+                          
+                          backdrop-blur-2xl
+                        `}
+                        style={{ boxShadow: '0 4px 32px 0 rgba(0, 80, 255, 0.10)' }}
+                        role="menu"
+                      >
+                        <div className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-cyber-text' : 'text-light-text'}`}>
+                          Signed in as
+                          <div className="font-semibold truncate">
+                            {currentUser.user_metadata?.username || currentUser.user_metadata?.full_name || currentUser.email}
+                          </div>
+                        </div>
+                        <div className={`${theme === 'dark' ? 'border-t border-cyber-surface' : 'border-t border-light-surface'}`} />
+                        <a
+                          href={`/profile/${currentUser.id}`}
+                          className={`block px-4 py-2 text-sm hover:bg-black/5 `}
+                          role="menuitem"
+                          onClick={() => setIsProfileMenuOpen(false)}
+                        >
+                          Profile
+                        </a>
+                        <button
+                          onClick={handleSignOut}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-black/5 `}
+                          role="menuitem"
+                        >
+                          Log out
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
 
-          {/* User Info */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className={`p-4 border-t ${
-              theme === 'dark' ? 'border-cyber-red/20' : 'border-light-red/20'
-            }`}
-          >
-            <UserInfo />
-          </motion.div>
-        </motion.aside>
+
+
+        {/* Theme Toggle Button floating under navbar, top right */}
+        <button
+          onClick={() => setThemeAndSave(theme === 'light' ? 'dark' : 'light')}
+          aria-label="Toggle theme"
+          className="fixed z-50 top-25 right-6 p-2 rounded-full border border-transparent hover:border-cyber-red/60 dark:hover:border-light-red/60 bg-transparent flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-cyber-red dark:focus:ring-light-red transition-colors shadow"
+          style={{ pointerEvents: 'auto' }}
+        >
+          {theme === 'dark' ? (
+            <svg className="w-6 h-6 text-cyber-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
+            </svg>
+          ) : (
+            <svg className="w-6 h-6 text-light-orange" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5" />
+              <path d="M13 1v2M12 21v2M4.22 4.22l1.42 1.42M18.96 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M19.36 5.64l1.42-1.42" />
+            </svg>
+          )}
+        </button>
 
         {/* Main Content */}
         <div className="flex flex-col flex-1 h-full relative">
-          {/* Theme Toggle */}
-          <motion.label
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            htmlFor="theme-toggle"
-            className="absolute top-4 right-4 cursor-pointer select-none z-20 flex items-center space-x-3 p-2 rounded-lg backdrop-blur-md transition-all duration-300"
-          >
-            <motion.svg
-              className={`w-5 h-5 transition-all duration-500 ${
-                theme === "light" 
-                  ? "opacity-100 text-light-orange scale-100" 
-                  : "opacity-0 text-cyber-orange scale-75"
-              }`}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              whileHover={{ rotate: 180 }}
-              transition={{ duration: 0.5 }}
-            >
-              <circle cx="12" cy="12" r="5" />
-              <path d="M13 1v2M12 21v2M4.22 4.22l1.42 1.42M18.96 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M19.36 5.64l1.42-1.42" />
-            </motion.svg>
-            
-            <input
-              id="theme-toggle"
-              type="checkbox"
-              className="theme-checkbox"
-              checked={theme === "dark"}
-              onChange={() => setThemeAndSave(theme === "light" ? "dark" : "light")}
-              aria-label="Toggle theme"
-            />
-            
-            <motion.svg
-              className={`w-5 h-5 transition-all duration-500 ${
-                theme === "dark" 
-                  ? "opacity-100 text-cyber-white scale-100" 
-                  : "opacity-0 text-light-white scale-75"
-              }`}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              whileHover={{ rotate: -180 }}
-              transition={{ duration: 0.5 }}
-            >
-              <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
-            </motion.svg>
-          </motion.label>
 
           {/* Main Content Area */}
           <motion.main
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className={`flex-1 overflow-y-auto transition-all duration-300 relative ${
+            className={`flex-1 overflow-y-auto transition-all duration-300 relative pt-24 md:pt-28 ${
               theme === 'dark' 
                 ? 'bg-gradient-to-br from-cyber-black via-cyber-black to-cyber-surface/20' 
                 : 'bg-gradient-to-br from-light-bg via-light-bg to-light-surface/50'

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { LogoutButton } from "./logout-button";
@@ -72,11 +73,19 @@ export function UserInfo() {
       >
         <Link href={`/profile/${user.id}`} className="block text-sm font-medium">
           <div className="flex items-center space-x-2">
-            <motion.span
-              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            >
-              👤
-            </motion.span>
+            {user.user_metadata?.avatar_url ? (
+              <Image
+                src={user.user_metadata.avatar_url}
+                alt="Avatar"
+                width={32}
+                height={32}
+                className="rounded-full object-cover border border-zinc-300 dark:border-zinc-700 shadow w-8 h-8"
+              />
+            ) : (
+              <motion.span transition={{ duration: 8, repeat: Infinity, ease: "linear" }}>
+                👤
+              </motion.span>
+            )}
             <span>{user.user_metadata?.username ?? user.email?.split('@')[0]}</span>
           </div>
         </Link>

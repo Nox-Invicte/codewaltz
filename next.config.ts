@@ -3,6 +3,16 @@ import type { NextConfig } from 'next';
 import type { Configuration } from 'webpack';
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'rhfaomqiddyngtrkshac.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/avatars/**',
+      },
+    ],
+  },
   turbopack: {
     // Enable Turbopack with default settings
     // You can add specific options here if needed, e.g., rules, loaders, etc.

@@ -15,7 +15,7 @@ export default {
         cyber: {
           'black': '#0A0A0A',          // Deep Black (base canvas)
           'surface': '#121212',         // Cards/Sections
-          'red': '#FF003C',            // Neon Red (primary accent)
+          'red': '#E02444',            // Darker Red (primary accent, improved readability)
           'purple': '#9D4EDD',         // Futuristic purple glow
           'white': '#FFFFFF',          // Pure white (instead of cyan)
           'text': '#EAEAEA',           // Primary text
@@ -24,14 +24,14 @@ export default {
         },
         // Light Mode (Futuristic Sleek)
         light: {
-          'bg': '#FAFAFA',             // Almost White
-          'surface': '#F0F0F3',        // Subtle light gray
-          'red': '#E60026',            // Crimson Red
-          'purple': '#7A3EEB',         // Tech Purple
+          'bg': '#F3F4F6',             // Softer off-white
+          'surface': '#E9EAEE',        // Muted light gray
+          'red': '#CC112E',            // Softer red
+          'purple': '#6B35D5',         // Muted tech purple
           'white': '#FFFFFF',          // Pure white
-          'text': '#1A1A1A',           // Near-black
-          'text-muted': '#555555',     // Medium gray
-          'orange': '#FF3B30',         // Clear red warning
+          'text': '#232323',           // Softer near-black
+          'text-muted': '#666666',     // Softer gray
+          'orange': '#E0443A',         // Muted warning
         },
         // Keep existing shadcn colors for compatibility
         background: "hsl(var(--background))",

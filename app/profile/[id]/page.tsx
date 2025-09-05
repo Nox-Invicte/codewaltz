@@ -1,6 +1,11 @@
+
+
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { InfoIcon, User, Mail, Calendar } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const ProfileClient = dynamic(() => import('./ProfileClient'));
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>;
@@ -16,7 +21,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   }
 
   // For now, only allow viewing own profile
-
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
@@ -58,6 +62,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             </div>
           </div>
         </div>
+        <ProfileClient />
       </div>
     </div>
   );

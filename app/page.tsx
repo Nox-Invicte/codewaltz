@@ -3,103 +3,18 @@ import { useState, useEffect, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { fetchSnippets, type Snippet } from "@/lib/supabase/snippets";
+import { fetchSnippets, shareSnippet, fetchCommentCount, type Snippet } from "@/lib/supabase/snippets";
+import { createClient } from "@/lib/supabase/client";
+// @ts-ignore
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 import { ThemeContext } from "./LayoutClient";
+import Link from "next/link";
+import Avatar from "@/components/ui/avatar";
+import { getAvatarUrl } from "@/lib/supabase/avatar";
 
 export default function Home() {
-  const [snippets, setSnippets] = useState<Snippet[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const { theme } = useContext(ThemeContext);
-
-  useEffect(() => {
-    const loadSnippets = async () => {
-      try {
-        const data = await fetchSnippets();
-        setSnippets(data);
-      } catch (err) {
-        // For demo purposes, show sample data when Supabase isn't configured
-        const sampleData: Snippet[] = [
-          {
-            id: "1",
-            title: "React Hook Example",
-            language: "javascript",
-            code: `import { useState, useEffect } from 'react';
-
-export function useCounter(initialValue = 0) {
-  const [count, setCount] = useState(initialValue);
-  
-  const increment = () => setCount(c => c + 1);
-  const decrement = () => setCount(c => c - 1);
-  const reset = () => setCount(initialValue);
-  
-  return { count, increment, decrement, reset };
-}`,
-            author: "CodeWaltz Demo",
-            user_id: "demo",
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            id: "2",
-            title: "Python Data Processing",
-            language: "python",
-            code: `import pandas as pd
-import numpy as np
-
-def process_data(df):
-    # Clean and transform data
-    df_clean = df.dropna()
-    df_clean['normalized'] = (df_clean['value'] - df_clean['value'].mean()) / df_clean['value'].std()
-    
-    return df_clean.groupby('category').agg({
-        'normalized': ['mean', 'std', 'count'],
-        'value': 'sum'
-    }).round(2)`,
-            author: "Data Scientist",
-            user_id: "demo",
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            id: "3",
-            title: "CSS Grid Layout",
-            language: "css",
-            code: `.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
-}
-
-.grid-item {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-}
-
-.grid-item:hover {
-  transform: translateY(-5px);
-}`,
-            author: "UI Designer",
-            user_id: "demo",
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        ];
-        setSnippets(sampleData);
-        console.log("Using sample data for demo purposes");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadSnippets();
-  }, []);
+  // Restore missing variables and handlers
+  // (moved below useState hooks)
 
   const handleCopy = async (code: string, id: string) => {
     try {
@@ -111,15 +26,25 @@ def process_data(df):
     }
   };
 
-  const filteredSnippets = snippets.filter(snippet => {
-    const matchesLanguage = selectedLanguage === "all" || snippet.language === selectedLanguage;
-    const matchesSearch = snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         snippet.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         snippet.code.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesLanguage && matchesSearch;
-  });
-
-  const languages = [...new Set(snippets.map(s => s.language))];
+  const handleShare = async (id: string) => {
+    try {
+      const shareUrl = `${window.location.origin}/snippets/${id}`;
+      if (navigator.share) {
+        await navigator.share({ title: 'CodeWaltz Snippet', url: shareUrl });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Share link copied to clipboard');
+      }
+    } catch (_) {
+      try { await navigator.clipboard.writeText(`${window.location.origin}/snippets/${id}`); alert('Share link copied to clipboard'); } catch (_) {}
+    }
+    try {
+      const updated = await shareSnippet(id);
+      setSnippets(prev => prev.map(s => s.id === id ? updated : s));
+    } catch (e) {
+      alert('Failed to record share.');
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -151,13 +76,153 @@ def process_data(df):
       opacity: 1,
       y: 0,
       transition: {
-        // Remove 'type' or use allowed value, or just use spring props
         stiffness: 200,
         damping: 20,
       },
     },
   };
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [avatarMap, setAvatarMap] = useState<Record<string, string | undefined>>({});
+  const { theme } = useContext(ThemeContext);
 
+  const filteredSnippets = snippets.filter(snippet => {
+    const matchesLanguage = selectedLanguage === "all" || snippet.language === selectedLanguage;
+    const matchesSearch = snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      snippet.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      snippet.code.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesLanguage && matchesSearch;
+  });
+
+  const languages = [...new Set(snippets.map(s => s.language))];
+
+  const formatDate = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit', timeZone: 'UTC' });
+    } catch {
+      return iso?.slice(0, 10) ?? '';
+    }
+  };
+
+  useEffect(() => {
+    const loadSnippets = async () => {
+      try {
+        const data = await fetchSnippets();
+        // augment with live comment counts to avoid stale counters
+        const withCounts = await Promise.all(
+          data.map(async s => ({ ...s, comments_count: await fetchCommentCount(s.id) }))
+        );
+        setSnippets(withCounts);
+        // Collect all unique user_ids
+        const userIds = Array.from(new Set(withCounts.map(s => s.user_id).filter(Boolean)));
+        if (userIds.length > 0) {
+          // Fetch avatar URLs from avatar table using getAvatarUrl util
+          let avatarMap: Record<string, string | undefined> = {};
+          const promises = userIds.map(async (userId) => {
+            const url = await getAvatarUrl(userId);
+            return [userId, url] as [string, string | undefined];
+          });
+          const results = await Promise.all(promises);
+          avatarMap = Object.fromEntries(results);
+          setAvatarMap(avatarMap);
+        }
+      } catch (err) {
+        // For demo purposes, show sample data when Supabase isn't configured
+        const sampleData: Snippet[] = [
+          {
+            id: "1",
+            title: "React Hook Example",
+            language: "javascript",
+            code: [
+              "import { useState, useEffect } from 'react';",
+              "",
+              "export function useCounter(initialValue = 0) {",
+              "  const [count, setCount] = useState(initialValue);",
+              "  ",
+              "  const increment = () => setCount(c => c + 1);",
+              "  const decrement = () => setCount(c => c - 1);",
+              "  const reset = () => setCount(initialValue);",
+              "  ",
+              "  return { count, increment, decrement, reset };",
+              "}"
+            ].join("\n"),
+            author: "CodeWaltz Demo",
+            user_id: "demo",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+          {
+            id: "2",
+            title: "Python Data Processing",
+            language: "python",
+            code: [
+              "import pandas as pd",
+              "import numpy as np",
+              "",
+              "def process_data(df):",
+              "    # Clean and transform data",
+              "    df_clean = df.dropna()",
+              "    df_clean['normalized'] = (df_clean['value'] - df_clean['value'].mean()) / df_clean['value'].std()",
+              "    ",
+              "    return df_clean.groupby('category').agg({",
+              "        'normalized': ['mean', 'std', 'count'],",
+              "        'value': 'sum'",
+              "    }).round(2)"
+            ].join("\n"),
+            author: "Data Scientist",
+            user_id: "demo",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+          {
+            id: "3",
+            title: "CSS Grid Layout",
+            language: "css",
+            code: [
+              ".grid-container {",
+              "  display: grid;",
+              "  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));",
+              "  gap: 2rem;",
+              "  padding: 2rem;",
+              "}",
+              "",
+              ".grid-item {",
+              "  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);",
+              "  padding: 2rem;",
+              "  border-radius: 12px;",
+              "  box-shadow: 0 10px 30px rgba(0,0,0,0.1);",
+              "  transition: transform 0.3s ease;",
+              "}",
+              "",
+              ".grid-item:hover {",
+              "  transform: translateY(-5px);",
+              "}"
+            ].join("\n"),
+            author: "UI Designer",
+            user_id: "demo",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ];
+        setSnippets(sampleData);
+        console.log("Using sample data for demo purposes");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadSnippets();
+    // fetch current user id for unique like/share
+    (async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    })();
+  }, []);
   if (loading) {
     return (
       <motion.main
@@ -374,38 +439,43 @@ def process_data(df):
               />
 
               {/* Copy Button */}
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileHover={{ scale: 1.1 }}
-                className={`absolute top-4 right-4 z-10 p-2 rounded-lg backdrop-blur-md transition-all duration-300 ${
-                  copiedId === snippet.id
-                    ? theme === 'dark'
-                      ? 'bg-cyber-white/20 text-cyber-white border border-cyber-white/50'
-                      : 'bg-light-white/20 text-light-white border border-light-white/50'
-                    : theme === 'dark'
-                      ? 'bg-cyber-surface/80 text-cyber-text-muted border border-cyber-surface opacity-0 group-hover:opacity-100 hover:text-cyber-white hover:border-cyber-white/50'
-                      : 'bg-light-surface/80 text-light-text-muted border border-light-surface opacity-0 group-hover:opacity-100 hover:text-light-white hover:border-light-white/50'
-                }`}
-                onClick={() => handleCopy(snippet.code, snippet.id)}
-              >
-                {copiedId === snippet.id ? '✓' : '📋'}
-              </motion.button>
+              
 
               {/* Header */}
               <div className="relative z-10 mb-6">
                 <div className="flex items-center justify-between mb-2">
+                  {/* Title on the left */}
                   <h2 className={`text-2xl font-bold ${
                     theme === 'dark' ? 'text-cyber-text' : 'text-light-text'
                   }`}>
                     {snippet.title}
                   </h2>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
-                    theme === 'dark'
-                      ? 'bg-cyber-purple/20 text-cyber-purple border border-cyber-purple/30'
-                      : 'bg-light-purple/20 text-light-purple border border-light-purple/30'
-                  }`}>
-                    {snippet.language}
-                  </span>
+                  {/* Language and Copy button on the right */}
+                  <div className="flex items-center gap-3">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
+                      theme === 'dark'
+                        ? 'bg-cyber-purple/20 text-cyber-purple border border-cyber-purple/30'
+                        : 'bg-light-purple/20 text-light-purple border border-light-purple/30'
+                    }`}>
+                      {snippet.language}
+                    </span>
+                    <motion.button
+                      initial={{ opacity: 1, scale: 0.95 }}
+                      whileHover={{ scale: 1.05 }}
+                      className={`z10 p-2 rounded-lg backdrop-blur-md transition-all duration-300 ${
+                        copiedId === snippet.id
+                          ? theme === 'dark'
+                            ? 'bg-cyber-white/20 text-cyber-white border border-cyber-white/50'
+                            : 'bg-light-white/20 text-light-white border border-light-white/50'
+                          : theme === 'dark'
+                            ? 'bg-cyber-surface/80 text-cyber-text border border-cyber-surface hover:text-cyber-white hover:border-cyber-white/50'
+                            : 'bg-light-surface/80 text-light-text border border-light-surface hover:text-light-white hover:border-light-white/50'
+                      }`}
+                      onClick={() => handleCopy(snippet.code, snippet.id)}
+                    >
+                      {copiedId === snippet.id ? '✓' : '📋'}
+                    </motion.button>
+                  </div>
                 </div>
               </div>
 
@@ -432,16 +502,43 @@ def process_data(df):
               }`}>
                 <div className="flex items-center space-x-4">
                   <span className="flex items-center space-x-1">
-                    <span>👤</span>
+                    <Avatar url={avatarMap[snippet.user_id]} size={32} />
                     <span>{snippet.author}</span>
+                  </span>
+                  <span className="flex items-center space-x-1">
+                    <span>💬</span>
+                    <span>{snippet.comments_count ?? 0}</span>
                   </span>
                 </div>
                 <div className="flex items-center space-x-4 text-xs">
-                  <span>📅 {new Date(snippet.created_at).toLocaleDateString()}</span>
+                  <span>📅 {formatDate(snippet.created_at)}</span>
                   {snippet.updated_at !== snippet.created_at && (
-                    <span>✏️ {new Date(snippet.updated_at).toLocaleDateString()}</span>
+                    <span>✏️ {formatDate(snippet.updated_at)}</span>
                   )}
                 </div>
+              </div>
+
+              {/* Actions */}
+              <div className="relative z-10 mt-4 flex flex-wrap gap-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleShare(snippet.id)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                    theme === 'dark'
+                      ? 'bg-cyber-purple/20 text-cyber-purple border border-cyber-purple/30 hover:bg-cyber-purple/30'
+                      : 'bg-light-purple/20 text-light-purple border border-light-purple/30 hover:bg-light-purple/30'
+                  }`}
+                >
+                  🔗 Share
+                </motion.button>
+                <Link href={`/snippets/${snippet.id}`} className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 border ${
+                  theme === 'dark'
+                    ? 'bg-cyber-surface/40 text-cyber-text border-cyber-surface hover:bg-cyber-surface/60'
+                    : 'bg-light-surface/40 text-light-text border-light-surface hover:bg-light-surface/60'
+                }`}>
+                  💬 Comments ({snippet.comments_count ?? 0})
+                </Link>
               </div>
             </motion.article>
           ))}

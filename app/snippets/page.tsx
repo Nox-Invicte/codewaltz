@@ -9,6 +9,8 @@ import { fetchSnippets, fetchUserSnippets, addSnippet, updateSnippet, deleteSnip
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { ThemeContext } from "@/app/LayoutClient";
+import Avatar from "@/components/ui/avatar";
+import { getAvatarUrl } from "@/lib/supabase/avatar";
 
 export default function SnippetsPage() {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
@@ -18,6 +20,7 @@ export default function SnippetsPage() {
   const [displayName, setDisplayName] = useState<string>("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const { theme } = useContext(ThemeContext);
+  const [avatarMap, setAvatarMap] = useState<Record<string, string | undefined>>({});
   
 
   useEffect(() => {
@@ -30,6 +33,21 @@ export default function SnippetsPage() {
         }
         const data = await fetchUserSnippets(currentUser.id);
         setSnippets(data);
+        // Collect all user_ids (snippet authors)
+        const userIds = new Set<string>();
+        data.forEach(snippet => snippet.user_id && userIds.add(snippet.user_id));
+        console.log('Collected user_ids:', Array.from(userIds));
+        // Fetch avatar URLs from avatar table using getAvatarUrl util
+        let avatarMap: Record<string, string | undefined> = {};
+        if (userIds.size > 0) {
+          const promises = Array.from(userIds).map(async (userId) => {
+            const url = await getAvatarUrl(userId);
+            return [userId, url] as [string, string | undefined];
+          });
+          const results = await Promise.all(promises);
+          avatarMap = Object.fromEntries(results);
+        }
+        setAvatarMap(avatarMap);
       } catch (err) {
         console.error("Error loading user snippets in page:", err);
         setError(err instanceof Error ? err.message : "Failed to load snippets");
@@ -177,6 +195,8 @@ export default function SnippetsPage() {
     openConfirmDialog("Delete", id);
   };
 
+  // removed like/share interactions on this page (stats-only)
+
   const handleCancelEdit = () => {
     setForm({ title: "", language: "javascript", code: "", author: "" });
     setEditingId(null);
@@ -218,9 +238,9 @@ export default function SnippetsPage() {
           animate={{ opacity: 1, y: 0 }}
           className={`text-5xl lg:text-6xl font-bold mb-8 bg-gradient-to-r ${
             theme === 'dark' 
-              ? 'from-cyber-red via-cyber-purple to-cyber-white' 
-              : 'from-light-red via-light-purple to-light-white'
-          } bg-clip-text text-transparent`}
+              ? 'from-cyber-red via-cyber-purple to-cyber-white text-white' 
+              : 'from-light-red via-light-purple to-light-white text-black'
+          } bg-clip-text`}
         >
           Your Snippets
         </motion.h1>
@@ -252,9 +272,9 @@ export default function SnippetsPage() {
           animate={{ opacity: 1, y: 0 }}
           className={`text-5xl lg:text-6xl font-bold mb-8 bg-gradient-to-r ${
             theme === 'dark' 
-              ? 'from-cyber-red via-cyber-purple to-cyber-white' 
-              : 'from-light-red via-light-purple to-light-white'
-          } bg-clip-text text-transparent`}
+              ? 'from-cyber-red via-cyber-purple to-cyber-white text-white' 
+              : 'from-light-red via-light-purple to-light-white text-black'
+          } bg-clip-text`}
         >
           Your Snippets
         </motion.h1>
@@ -286,9 +306,9 @@ export default function SnippetsPage() {
           animate={{ opacity: 1, y: 0 }}
           className={`text-5xl lg:text-6xl font-bold mb-8 bg-gradient-to-r ${
             theme === 'dark' 
-              ? 'from-cyber-red via-cyber-purple to-cyber-white' 
-              : 'from-light-red via-light-purple to-light-white'
-          } bg-clip-text text-transparent`}
+              ? 'from-cyber-red via-cyber-purple to-cyber-white text-white' 
+              : 'from-light-red via-light-purple to-light-white text-black'
+          } bg-clip-text`}
         >
           Your Snippets
         </motion.h1>
@@ -505,23 +525,7 @@ export default function SnippetsPage() {
                   }`}
                 />
 
-                {/* Copy Button */}
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileHover={{ scale: 1.1 }}
-                  className={`absolute top-4 right-4 z-10 p-2 rounded-lg backdrop-blur-md transition-all duration-300 ${
-                    copiedId === snippet.id
-                      ? theme === 'dark'
-                        ? 'bg-cyber-white/20 text-cyber-white border border-cyber-white/50'
-                        : 'bg-light-white/20 text-light-white border border-light-white/50'
-                      : theme === 'dark'
-                        ? 'bg-cyber-surface/80 text-cyber-text-muted border border-cyber-surface opacity-0 group-hover:opacity-100 hover:text-cyber-white hover:border-cyber-white/50'
-                        : 'bg-light-surface/80 text-light-text-muted border border-light-surface opacity-0 group-hover:opacity-100 hover:text-light-white hover:border-light-white/50'
-                  }`}
-                  onClick={() => handleCopy(snippet.code, snippet.id)}
-                >
-                  {copiedId === snippet.id ? '✓' : '📋'}
-                </motion.button>
+                
 
                 {/* Header */}
                 <div className="relative z-10 mb-6">
@@ -542,7 +546,24 @@ export default function SnippetsPage() {
                 </div>
 
                 {/* Code */}
-                <div className="relative z-10 mb-6 rounded-xl overflow-hidden">
+                <div className="relative z-10 rounded-xl overflow-hidden">
+                  {/* Copy Button inside code block to avoid overlap */}
+                  <motion.button
+                    initial={{ opacity: 1, scale: 0.95 }}
+                    whileHover={{ scale: 1.05 }}
+                    className={`absolute top-2 right-2 z-10 p-2 rounded-lg backdrop-blur-md transition-all duration-300 ${
+                      copiedId === snippet.id
+                        ? theme === 'dark'
+                          ? 'bg-cyber-white/20 text-cyber-white border border-cyber-white/50'
+                          : 'bg-light-white/20 text-light-white border border-light-white/50'
+                        : theme === 'dark'
+                          ? 'bg-cyber-surface/80 text-cyber-text border border-cyber-surface hover:text-cyber-white hover:border-cyber-white/50'
+                          : 'bg-light-surface/80 text-light-text border border-light-surface hover:text-light-white hover:border-light-white/50'
+                    }`}
+                    onClick={() => handleCopy(snippet.code, snippet.id)}
+                  >
+                    {copiedId === snippet.id ? '✓' : '📋'}
+                  </motion.button>
                   <SyntaxHighlighter
                     language={snippet.language}
                     style={theme === 'dark' ? oneDark : oneLight}
@@ -551,6 +572,7 @@ export default function SnippetsPage() {
                       margin: 0,
                       borderRadius: "12px",
                       background: theme === 'dark' ? "#282C34" : "#f8f8f8",
+                      padding: "1.25rem" // py-5, dynamic vertical padding
                     }}
                     showLineNumbers
                   >
@@ -562,11 +584,12 @@ export default function SnippetsPage() {
                 <div className={`relative z-10 flex items-center justify-between text-sm mb-4 ${
                   theme === 'dark' ? 'text-cyber-text-muted' : 'text-light-text-muted'
                 }`}>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center py-4 space-x-4">
                     <span className="flex items-center space-x-1">
-                      <span>👤</span>
+                      <Avatar url={avatarMap[snippet.user_id]} size={32} />
                       <span>{snippet.author}</span>
                     </span>
+                    <span className="flex items-center space-x-1"><span>💬</span><span>{snippet.comments_count ?? 0}</span></span>
                   </div>
                   <div className="flex items-center space-x-4 text-xs">
                     <span>📅 {new Date(snippet.created_at).toLocaleDateString()}</span>
@@ -577,8 +600,9 @@ export default function SnippetsPage() {
                 </div>
 
                 {/* Action Buttons */}
+                <div className="relative z-10 flex flex-wrap gap-3">
                 {currentUser && currentUser.id === snippet.user_id && (
-                  <div className="relative z-10 flex space-x-3">
+                  <>
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -603,8 +627,9 @@ export default function SnippetsPage() {
                     >
                       Delete
                     </motion.button>
-                  </div>
+                  </>
                 )}
+                </div>
               </motion.article>
             ))}
           </motion.section>
@@ -688,7 +713,7 @@ export default function SnippetsPage() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={confirmDialog.actionType === "Save" ? confirmSave : confirmDelete}
-                  className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+                  className={`px-6 py-3 rounded-xl font-bold border transition-all duration-300 ${
                     confirmDialog.actionType === "Save"
                       ? theme === 'dark'
                         ? 'bg-cyber-cyan text-white hover:bg-cyber-cyan/80 shadow-lg shadow-cyber-cyan/25'
